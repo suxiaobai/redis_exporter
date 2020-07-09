@@ -91,11 +91,20 @@ func (e *Exporter) scrapeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// init options
+	opts := e.options
+
+	// load redis password
+	password, ok := u.User.Password()
+	if ok {
+		opts.Password = password
+	}
+
 	// get rid of username/password info in "target" so users don't send them in plain text via http
 	u.User = nil
 	target = u.String()
 
-	opts := e.options
+	// opts := e.options
 
 	if ck := r.URL.Query().Get("check-keys"); ck != "" {
 		opts.CheckKeys = ck
